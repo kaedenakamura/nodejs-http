@@ -83,7 +83,7 @@ switch (req.method) {
   console.error(`${new Date()} Client Error`, e);
 });
 
-const port = 8000;
+const port = process.env.port  || 8000;
 server.listen(port, () => {
   console.log(`${new Date()} Listening on port ${port}`);
 });
