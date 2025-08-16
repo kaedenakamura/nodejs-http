@@ -1,11 +1,22 @@
 'use strict'
 const http = require('node:http');
 const pug = require('pug');
+const auth = require('http-auth');
+const basic = auth.basic({
+  raalm: "enquetes Area."}, (username, password, callback) => {
+    callback(username === "gest" && password === "secret");}
+);
 
-
-const server = http.createServer((req, res) => {
+const server = http.createServer(basic.check((req, res) => {
   const now = new Date();
   console.info(`${now} Requested by ${req.socket.remoteAddress}`);
+  if (req.url === "/logout") {
+    res.writeHead(401, {
+      "content-type": "text/plain; charset=utf-8",
+    })
+    res.end("ログアウトしました。");
+    return
+  }
   res.writeHead(200, {
     "Content-Type": "text/html; charset=utf-8",
   });
@@ -77,7 +88,7 @@ switch (req.method) {
       res.end();
       break;
   }
-}).on("error", e => {
+})).on("error", e => {
   console.error(`${new Date()} Server Error`, e);
 }).on("clientError", e => {
   console.error(`${new Date()} Client Error`, e);
